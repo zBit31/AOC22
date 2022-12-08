@@ -25,7 +25,7 @@ PROG1    CSECT
 *        SR    R7,R7          Clear R7 - Will have the max value 1
 *        SR    R8,R8          Clear R8 - Will have the max value 2
 *        SR    R9,R9          Clear R9 - Will have the max value 3
-*        SR    R4,R4          Clear R4 - Will have the current addition
+         SR    R4,R4          Clear R4 - Will have the current addition
 GET_LINE GET   FILEIN,RECIN
          MVC   RECOUT,BLANK   Blank Output
          MVC   RECOUT(20),RECIN
@@ -49,8 +49,13 @@ FIND_LOOP EQU *
          BC    2,NOT_FOUND
          MVC   RECOUT+50(10),=CL10' FOUND '
          ST    R0,RECOUT+60
-         ST    R0,RECOUT+64
-         TR    RECOUT+64(4),HEXTAB
+         ST    R0,RECOUT+64        Write the char
+         TR    RECOUT+64(4),HEXTAB translate to the value
+         L     R0,RECOUT+64        Load on R0
+         AR    R4,R0               Add to R4
+         CVD   R4,CPACKED          Go display the sum
+         UNPK  RECOUT+20(9),CPACKED(L'CPACKED+1)
+         MVI   RECOUT+20+7,C' '  Get rid of the "C" for packed decimal
          J     GO_PUT
 NOT_FOUND EQU *
          LA    R5,1(0,R5)           go to next byte
@@ -114,111 +119,111 @@ PACK     PACK  CPACKED,RECIN(0)
 ZEROES   DS    8C'0'
 SAVEAREA DC    18F'0'     AREA FOR MY CALLEE TO SAVE & RESTORE MY REGS
 *
-HEXTAB   DC    XL256'00'
+HEXTAB   DC    XL256'CC'
          ORG   HEXTAB+C'a'
-         DC    F'1'
+         DC    X'01'
          ORG   HEXTAB+C'b'
-         DC    F'2'
+         DC    X'02'
          ORG   HEXTAB+C'c'
-         DC    F'3'
+         DC    X'03'
          ORG   HEXTAB+C'd'
-         DC    F'4'
+         DC    X'04'
          ORG   HEXTAB+C'e'
-         DC    F'5'
+         DC    X'05'
          ORG   HEXTAB+C'f'
-         DC    F'6'
+         DC    X'06'
          ORG   HEXTAB+C'g'
-         DC    F'7'
+         DC    X'07'
          ORG   HEXTAB+C'h'
-         DC    F'8'
+         DC    X'08'
          ORG   HEXTAB+C'i'
-         DC    F'9'
+         DC    X'09'
          ORG   HEXTAB+C'j'
-         DC    F'10'
+         DC    X'0A'
          ORG   HEXTAB+C'k'
-         DC    F'11'
+         DC    X'0B'
          ORG   HEXTAB+C'l'
-         DC    F'12'
+         DC    X'0C'
          ORG   HEXTAB+C'm'
-         DC    F'13'
+         DC    X'0D'
          ORG   HEXTAB+C'n'
-         DC    F'14'
+         DC    X'0E'
          ORG   HEXTAB+C'o'
-         DC    F'15'
+         DC    X'0F'
          ORG   HEXTAB+C'p'
-         DC    F'16'
+         DC    X'10'
          ORG   HEXTAB+C'q'
-         DC    F'17'
+         DC    X'11'
          ORG   HEXTAB+C'r'
-         DC    F'18'
+         DC    X'12'
          ORG   HEXTAB+C's'
-         DC    F'19'
+         DC    X'13'
          ORG   HEXTAB+C't'
-         DC    F'20'
+         DC    X'14'
          ORG   HEXTAB+C'u'
-         DC    F'21'
+         DC    X'15'
          ORG   HEXTAB+C'v'
-         DC    F'22'
+         DC    X'16'
          ORG   HEXTAB+C'w'
-         DC    F'23'
+         DC    X'17'
          ORG   HEXTAB+C'x'
-         DC    F'24'
+         DC    X'18'
          ORG   HEXTAB+C'y'
-         DC    F'25'
+         DC    X'19'
          ORG   HEXTAB+C'z'
-         DC    F'26'
+         DC    X'1A'
          ORG   HEXTAB+C'A'
-         DC    F'27'
+         DC    X'1B'
          ORG   HEXTAB+C'B'
-         DC    F'28'
+         DC    X'1C'
          ORG   HEXTAB+C'C'
-         DC    F'29'
+         DC    X'1D'
          ORG   HEXTAB+C'D'
-         DC    F'30'
+         DC    X'1E'
          ORG   HEXTAB+C'E'
-         DC    F'31'
+         DC    X'1F'
          ORG   HEXTAB+C'F'
-         DC    F'32'
+         DC    X'20'
          ORG   HEXTAB+C'G'
-         DC    F'33'
+         DC    X'21'
          ORG   HEXTAB+C'H'
-         DC    F'34'
+         DC    X'22'
          ORG   HEXTAB+C'I'
-         DC    F'35'
+         DC    X'23'
          ORG   HEXTAB+C'J'
-         DC    F'36'
+         DC    X'24'
          ORG   HEXTAB+C'K'
-         DC    F'37'
+         DC    X'25'
          ORG   HEXTAB+C'L'
-         DC    F'38'
+         DC    X'26'
          ORG   HEXTAB+C'M'
-         DC    F'39'
+         DC    X'27'
          ORG   HEXTAB+C'N'
-         DC    F'40'
+         DC    X'28'
          ORG   HEXTAB+C'O'
-         DC    F'41'
+         DC    X'29'
          ORG   HEXTAB+C'P'
-         DC    F'42'
+         DC    X'2A'
          ORG   HEXTAB+C'Q'
-         DC    F'43'
+         DC    X'2B'
          ORG   HEXTAB+C'R'
-         DC    F'44'
+         DC    X'2C'
          ORG   HEXTAB+C'S'
-         DC    F'45'
+         DC    X'2D'
          ORG   HEXTAB+C'T'
-         DC    F'46'
+         DC    X'2E'
          ORG   HEXTAB+C'U'
-         DC    F'47'
+         DC    X'2F'
          ORG   HEXTAB+C'V'
-         DC    F'48'
+         DC    X'30'
          ORG   HEXTAB+C'W'
-         DC    F'49'
+         DC    X'31'
          ORG   HEXTAB+C'X'
-         DC    F'50'
+         DC    X'32'
          ORG   HEXTAB+C'Y'
-         DC    F'51'
+         DC    X'33'
          ORG   HEXTAB+C'Z'
-         DC    F'52'
+         DC    X'34'
          ORG
 *
          LTORG
@@ -227,14 +232,14 @@ HEXTAB   DC    XL256'00'
 /*
 //LINK    EXEC PGM=IEWL,COND=(0,NE),
 // PARM='XREF,LET,LIST,NCAL'
-//SYSLMOD  DD  DISP=SHR,DSN=MY.LOAD(AOC22)
+//SYSLMOD  DD  DISP=SHR,DSN=LEO.LOAD(AOC22#3)
 //SYSUT1   DD  UNIT=SYSDA,SPACE=(1024,(50,20))
 //SYSPRINT DD  SYSOUT=*
 //APFBYPAS DD  DUMMY
 //SYSLIN   DD  DISP=OLD,DSN=*.ASM.SYSLIN
 //*
-//GO        EXEC PGM=AOC22,COND=(0,NE)
-//STEPLIB  DD DISP=SHR,DSN=MY.LOAD
+//GO        EXEC PGM=AOC22#3,COND=(0,NE)
+//STEPLIB  DD DISP=SHR,DSN=LEO.LOAD
 //SYSPRINT DD SYSOUT=*
 //DATASORT DD SYSOUT=*
 //FILEIN   DD  *
