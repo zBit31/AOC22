@@ -28,30 +28,27 @@ GET_LINE GET   FILEIN,0(R11)  Get text work
          MVI   RECOUT,C' '                  Blank Output
          MVC   RECOUT+1(L'RECOUT-1),RECOUT  Blank Output
          MVC   RECOUT(15),0(R11)
-         LA    R4,0(,R11)     R4 - Will have search start
-         AHI   R4,-1         Take one out to account for +1 on loop
+         LA    R5,0(,R11)      R5 - Will have search start
+         SR    R0,R0           R0 - needs to be zeroes for SRST
 LOOP_START EQU *
-         AHI   R4,1           Go to next char
-         CLC   3(1,R4),0(R4)
-         BE    LOOP_START  Char found,loop again
-         CLC   3(1,R4),1(R4)
-         BE    LOOP_START  Char found,loop again
-         CLC   3(1,R4),2(R4)
-         BE    LOOP_START  Char found,loop again
-         CLC   2(1,R4),0(R4)
-         BE    LOOP_START  Char found,loop again
-         CLC   2(1,R4),1(R4)
-         BE    LOOP_START  Char found,loop again
-         CLC   1(1,R4),0(R4)
-         BE    LOOP_START  Char found,loop again
+         LA    R4,DIFFLEN+1(,R5) R4 - Will have the search end
+         LR    R3,R5           R3 - Load search start for loop
+NEXT_CHA ICM   R0,B'0001',0(R3)         char to search
+         AHI   R3,1            R3 - Search start
+         CR    R4,R3           Compare Search start with end
+         JE    FOUND_PACKET    Searched through all characters
+         SRST  R4,R3
+         BC    B'0010',NEXT_CHA    Char not found, search next
+         AHI   R5,1
+         J     LOOP_START
 * start-of-packet found
-         AHI   R4,4   Add 3 to get to char on R0
+FOUND_PACKET EQU *
          SR    R4,R11 Subtract R11 to get the offset from work start
          CVD   R4,CPACKED          Convert to decimal again to display
          UNPK  RECOUT+60(9),CPACKED(L'CPACKED+1)
          MVI   RECOUT+60+7,C' '  Get rid of the "C" for packed decimal
-P        PUT   FILEOUT,RECOUT
-
+         PUT   FILEOUT,RECOUT
+*
          J     GET_LINE
 *
 FILE#EOD EQU   *
@@ -93,6 +90,7 @@ SAVEAREA DC    18F'0'     AREA FOR MY CALLEE TO SAVE & RESTORE MY REGS
 HEXTAB   DC    C'0123456789ABCDEF'
 *
 WORKLEN  EQU   256*1024*1024
+DIFFLEN  EQU   3          Lenght of chars that need to be different
 *
          LTORG
          YREGS
